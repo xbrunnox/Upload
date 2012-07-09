@@ -4,6 +4,9 @@
 <h1>Upload de arquivo</h1>
 </head>
 <body>
+    <c:if test="${not empty message}">
+        <p>${message}</p>
+    </c:if>
 	<div align="center">
 		<img src="<c:url value='/public/images/upaupa.jpeg' />"> <br>
 		<p>Commons File Upload Example</p>
@@ -12,7 +15,6 @@
 			<input type="file" name="foto"><br> <input type="Submit"
 				value="Upload File">
 		</form>
-		<button onclick="window.location.href='<c:url value="/upload/" />';">Upload</button>
 	</div>
 </body>
 </html>
