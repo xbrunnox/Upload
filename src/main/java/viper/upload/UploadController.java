@@ -25,6 +25,9 @@ public class UploadController {
     @Path("/upload")
     public void upload(UploadedFile foto) {
         System.out.println("Upload realizado");
+        result.include("message", "Upload realizado com sucesso!");
+        
+        result.redirectTo(this).index();
         // File fotoSalva = new File("/Users/xbrunnox/download.zip");
 
         //
