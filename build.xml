@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project default="WAR - Upload" basedir="." name="Upload">
+
+	<target name="Mapear JBoss">
+		<exec executable="mkdir">
+			<arg value="/Volumes/jbosscipresa" />
+		</exec>
+		<exec executable="mount">
+			<arg value="-t" />
+			<arg value="smbfs" />
+			<arg value="//10.0.31.1/jboss" />
+			<arg value="/Volumes/jbosscipresa" />
+		</exec>
+	</target>
+
+	<target name="vraptor-scanning2">
+		<path id="build.classpath">
+			<fileset dir="war/WEB-INF/lib" includes="*.jar" />
+		</path>
+
+		<java classpathref="build.classpath" classname="br.com.caelum.vraptor.scan.VRaptorStaticScanning" fork="true">
+			<arg value="war/WEB-INF/web.xml" />
+			<classpath refid="build.classpath" />
+			<classpath path="war/WEB-INF/classes" />
+		</java>
+	</target>
+
+	<target name="vraptor-scanning">
+		<path id="build.classpath">
+			<fileset dir="src/webapp/WEB-INF/lib" includes="*.jar" />
+		</path>
+
+		<java classpathref="build.classpath" classname="br.com.caelum.vraptor.scan.VRaptorStaticScanning" fork="true">
+			<arg value="src/webapp/WEB-INF/web.xml" />
+			<classpath refid="build.classpath" />
+			<classpath path="src" />
+		</java>
+	</target>
+
+	<target name="WAR - Upload" depends="vraptor-scanning" description="Gera um WAR do portal do corretor">
+		<delete file="upload.war" />
+		<jar destfile="upload.war" basedir=".">
+			<include name="build" />
+			<zipfileset dir="src/webapp">
+				<include name="**/*.*" />
+				<!--exclude name="**/commons-fileupload*.jar"/-->
+				<!--exclude name="**/commons-io*.jar"/-->
+			</zipfileset>
+			<zipfileset dir="src" prefix="WEB-INF/classes">
+				<include name="viper/**/*.class" />
+			</zipfileset>
+			<zipfileset dir="src/resources" prefix="WEB-INF/classes">
+				<include name="**/*.properties" />
+			</zipfileset>
+			<zipfileset dir="src/resources">
+				<include name="**/*.properties" />
+			</zipfileset>
+			<zipfileset dir="src" prefix="WEB-INF">
+				<include name="imagens/**/*.jpg" />
+				<include name="imagens/**/*.png" />
+				<include name="public/images/**/*.png" />
+			</zipfileset>
+		</jar>
+	</target>
+
+	<target name="Deploy JBoss 7" depends="WAR - Upload" description="Cria um WAR">
+		<delete file="/Users/xbrunnox/jboss-as-7.1.1.Final/standalone/deployments/upload.war" />
+		<move file="upload.war" todir="/Users/xbrunnox/jboss-as-7.1.1.Final/standalone/deployments" />
+	</target>
+
+	<target name="Deploy Tomcat 7" depends="WAR - Upload" description="Cria um WAR">
+		<delete file="/Users/xbrunnox/apache-tomcat-7.0.28/webapps/upload.war" />
+		<move file="upload.war" todir="/Users/xbrunnox/apache-tomcat-7.0.28/webapps" />
+	</target>
+
+	<target name="Deploy JBoss 7 - Cipresa" depends="Mapear JBoss, WAR - Upload" description="Cria um WAR">
+		<delete file="/Volumes/jbosscipresa/standalone/deployments/upload.war" />
+		<move file="upload.war" todir="/Volumes/jbosscipresa/standalone/deployments" />
+	</target>
+
+</project>
