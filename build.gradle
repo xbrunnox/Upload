@@ -1,0 +1,8 @@
+apply plugin: "eclipse-wtp"
+apply plugin: "war"
+
+archiveBaseName = "upload"
+
+task wrapper(type:Wrapper) {
+  gradleVersion = '1.0'
+}
